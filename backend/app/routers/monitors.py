@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.dependencies import get_db
 from app.models import Monitor
-from app.schemas import MonitorCreate
+from app.schemas import MonitorCreate, MonitorResponse
 
 
 router = APIRouter(
@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 
-@router.post("/")
+@router.post("/", response_model=MonitorResponse)
 def create_monitor(
     monitor_data: MonitorCreate,
     db: Session = Depends(get_db),
@@ -29,36 +29,15 @@ def create_monitor(
     db.commit()
     db.refresh(monitor)
 
-    return {
-        "id": monitor.id,
-        "name": monitor.name,
-        "url": monitor.url,
-        "interval_seconds": monitor.interval_seconds,
-        "expected_status": monitor.expected_status,
-        "is_active": monitor.is_active,
-        "created_at": monitor.created_at,
-        "updated_at": monitor.updated_at,
-    }
+    return monitor
 
-@router.get("/")
+@router.get("/", response_model=list[MonitorResponse])
 def get_monitors(db: Session = Depends(get_db)):
     monitors = db.query(Monitor).all()
 
-    return [
-        {
-            "id": monitor.id,
-            "name": monitor.name,
-            "url": monitor.url,
-            "interval_seconds": monitor.interval_seconds,
-            "expected_status": monitor.expected_status,
-            "is_active": monitor.is_active,
-            "created_at": monitor.created_at,
-            "updated_at": monitor.updated_at,
-        }
-        for monitor in monitors
-    ]
+    return monitors
 
-@router.get("/{monitor_id}")
+@router.get("/{monitor_id}", response_model=MonitorResponse)
 def get_monitor(
     monitor_id: int,
     db: Session = Depends(get_db),
@@ -71,16 +50,7 @@ def get_monitor(
             detail="Monitor not found",
         )
 
-    return {
-        "id": monitor.id,
-        "name": monitor.name,
-        "url": monitor.url,
-        "interval_seconds": monitor.interval_seconds,
-        "expected_status": monitor.expected_status,
-        "is_active": monitor.is_active,
-        "created_at": monitor.created_at,
-        "updated_at": monitor.updated_at,
-    }
+    return monitor
 
 @router.delete("/{monitor_id}")
 def delete_monitor(
