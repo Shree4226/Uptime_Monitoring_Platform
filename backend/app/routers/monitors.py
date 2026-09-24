@@ -37,6 +37,7 @@ def create_monitor(
         "expected_status": monitor.expected_status,
         "is_active": monitor.is_active,
         "created_at": monitor.created_at,
+        "updated_at": monitor.updated_at,
     }
 
 @router.get("/")
@@ -52,6 +53,7 @@ def get_monitors(db: Session = Depends(get_db)):
             "expected_status": monitor.expected_status,
             "is_active": monitor.is_active,
             "created_at": monitor.created_at,
+            "updated_at": monitor.updated_at,
         }
         for monitor in monitors
     ]
@@ -77,6 +79,7 @@ def get_monitor(
         "expected_status": monitor.expected_status,
         "is_active": monitor.is_active,
         "created_at": monitor.created_at,
+        "updated_at": monitor.updated_at,
     }
 
 @router.delete("/{monitor_id}")

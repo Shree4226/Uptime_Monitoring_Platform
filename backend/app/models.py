@@ -20,3 +20,8 @@ class Monitor(Base):
         DateTime,
         default=datetime.utcnow,
     )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow,
+    )
