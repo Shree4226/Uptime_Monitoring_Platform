@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: uptime-postgres
+    environment:
+      POSTGRES_USER: uptime_user
+      POSTGRES_PASSWORD: uptime_password
+      POSTGRES_DB: uptime_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
