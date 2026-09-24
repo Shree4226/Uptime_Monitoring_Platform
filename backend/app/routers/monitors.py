@@ -70,3 +70,21 @@ def get_monitor(
         "expected_status": monitor.expected_status,
         "is_active": monitor.is_active,
     }
+
+@router.delete("/{monitor_id}")
+def delete_monitor(
+    monitor_id: int,
+    db: Session = Depends(get_db),
+):
+    monitor = db.query(Monitor).filter(Monitor.id == monitor_id).first()
+
+    if not monitor:
+        return {"error": "Monitor not found"}
+
+    db.delete(monitor)
+    db.commit()
+
+    return {
+        "message": "Monitor deleted successfully",
+        "id": monitor_id,
+    }
