@@ -35,3 +35,19 @@ def create_monitor(
         "interval_seconds": monitor.interval_seconds,
         "expected_status": monitor.expected_status,
     }
+
+@router.get("/")
+def get_monitors(db: Session = Depends(get_db)):
+    monitors = db.query(Monitor).all()
+
+    return [
+        {
+            "id": monitor.id,
+            "name": monitor.name,
+            "url": monitor.url,
+            "interval_seconds": monitor.interval_seconds,
+            "expected_status": monitor.expected_status,
+            "is_active": monitor.is_active,
+        }
+        for monitor in monitors
+    ]
