@@ -5,6 +5,8 @@ class Settings(BaseSettings):
     app_name: str = "Uptime Monitoring Platform"
     debug: bool = True
     database_url: str
+    redis_broker_url: str
+    redis_backend_url: str
 
     model_config = SettingsConfigDict(env_file=".env")
 
