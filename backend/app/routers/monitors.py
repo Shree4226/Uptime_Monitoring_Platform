@@ -126,3 +126,28 @@ def update_monitor(
         "expected_status": monitor.expected_status,
         "is_active": monitor.is_active,
     }
+
+@router.patch("/{monitor_id}/status")
+def update_monitor_status(
+    monitor_id: int,
+    is_active: bool,
+    db: Session = Depends(get_db),
+):
+    monitor = db.query(Monitor).filter(Monitor.id == monitor_id).first()
+
+    if not monitor:
+        raise HTTPException(
+            status_code=404,
+            detail="Monitor not found",
+        )
+
+    monitor.is_active = is_active
+
+    db.commit()
+    db.refresh(monitor)
+
+    return {
+        "id": monitor.id,
+        "is_active": monitor.is_active,
+        "message": "Monitor status updated successfully",
+    }
