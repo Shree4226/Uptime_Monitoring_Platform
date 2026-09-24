@@ -28,3 +28,7 @@ class MonitorStatusResponse(BaseModel):
     id: int
     is_active: bool
     message: str
+
+class MonitorDeleteResponse(BaseModel):
+    id: int
+    message: str

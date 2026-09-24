@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.dependencies import get_db
 from app.models import Monitor
-from app.schemas import MonitorCreate, MonitorResponse, MonitorStatusResponse
+from app.schemas import MonitorCreate, MonitorResponse, MonitorStatusResponse, MonitorDeleteResponse
 
 
 router = APIRouter(
@@ -52,7 +52,7 @@ def get_monitor(
 
     return monitor
 
-@router.delete("/{monitor_id}")
+@router.delete("/{monitor_id}", response_model=MonitorDeleteResponse)
 def delete_monitor(
     monitor_id: int,
     db: Session = Depends(get_db),
