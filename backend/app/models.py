@@ -1,4 +1,5 @@
-from sqlalchemy import Boolean, Integer, String
+from datetime import datetime
+from sqlalchemy import Boolean, DateTime, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -15,3 +16,7 @@ class Monitor(Base):
     interval_seconds: Mapped[int] = mapped_column(Integer, default=60)
     expected_status: Mapped[int] = mapped_column(Integer, default=200)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.utcnow,
+    )
