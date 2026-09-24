@@ -33,3 +33,4 @@ def perform_check(monitor: Monitor):
             "response_time_ms": None,
             "is_success": False,
         }
+
