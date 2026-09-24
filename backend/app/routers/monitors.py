@@ -22,6 +22,7 @@ def create_monitor(
         url=str(monitor_data.url),
         interval_seconds=monitor_data.interval_seconds,
         expected_status=monitor_data.expected_status,
+        is_active=monitor_data.is_active,
     )
 
     db.add(monitor)
