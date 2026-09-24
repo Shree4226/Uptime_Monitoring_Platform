@@ -1,6 +1,6 @@
 from datetime import datetime
-from sqlalchemy import Boolean, DateTime, Integer, String
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import Boolean, DateTime, Integer, String, ForeignKey
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Base(DeclarativeBase):
@@ -24,4 +24,41 @@ class Monitor(Base):
         DateTime,
         default=datetime.utcnow,
         onupdate=datetime.utcnow,
+    )
+    checks: Mapped[list["Check"]] = relationship(
+        back_populates="monitor",
+    )
+
+class Check(Base):
+    __tablename__ = "checks"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+
+    monitor_id: Mapped[int] = mapped_column(
+        ForeignKey("monitors.id"),
+        nullable=False,
+    )
+
+    status_code: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True,
+    )
+
+    response_time_ms: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True,
+    )
+
+    is_success: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.utcnow,
+    )
+
+    monitor: Mapped["Monitor"] = relationship(
+        back_populates="checks",
     )
