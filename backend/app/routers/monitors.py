@@ -3,8 +3,13 @@ from sqlalchemy.orm import Session
 
 from app.dependencies import get_db
 from app.models import Monitor
-from app.schemas import MonitorCreate, MonitorResponse, MonitorStatusResponse, MonitorDeleteResponse
-
+from app.schemas import (
+    MonitorCreate,
+    MonitorResponse,
+    MonitorStatusResponse,
+    MonitorDeleteResponse,
+    CheckResponse,
+)
 
 router = APIRouter(
     prefix="/monitors",
@@ -121,3 +126,21 @@ def update_monitor_status(
         "is_active": monitor.is_active,
         "message": "Monitor status updated successfully",
     }
+
+@router.get(
+    "/{monitor_id}/checks",
+    response_model=list[CheckResponse],
+)
+def get_monitor_checks(
+    monitor_id: int,
+    db: Session = Depends(get_db),
+):
+    monitor = db.query(Monitor).filter(Monitor.id == monitor_id).first()
+
+    if not monitor:
+        raise HTTPException(
+            status_code=404,
+            detail="Monitor not found",
+        )
+
+    return monitor.checks

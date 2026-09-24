@@ -32,3 +32,15 @@ class MonitorStatusResponse(BaseModel):
 class MonitorDeleteResponse(BaseModel):
     id: int
     message: str
+
+class CheckResponse(BaseModel):
+    id: int
+    monitor_id: int
+    status_code: int | None
+    response_time_ms: int | None
+    is_success: bool
+    created_at: datetime
+
+    model_config = {
+        "from_attributes": True
+    }
