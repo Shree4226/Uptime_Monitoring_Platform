@@ -73,7 +73,7 @@ def delete_monitor(
         "id": monitor_id,
     }
 
-@router.put("/{monitor_id}")
+@router.put("/{monitor_id}", response_model=MonitorResponse)
 def update_monitor(
     monitor_id: int,
     monitor_data: MonitorCreate,
@@ -95,14 +95,7 @@ def update_monitor(
     db.commit()
     db.refresh(monitor)
 
-    return {
-        "id": monitor.id,
-        "name": monitor.name,
-        "url": monitor.url,
-        "interval_seconds": monitor.interval_seconds,
-        "expected_status": monitor.expected_status,
-        "is_active": monitor.is_active,
-    }
+    return monitor
 
 @router.patch("/{monitor_id}/status")
 def update_monitor_status(
