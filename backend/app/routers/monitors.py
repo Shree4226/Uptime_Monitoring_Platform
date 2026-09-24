@@ -88,3 +88,31 @@ def delete_monitor(
         "message": "Monitor deleted successfully",
         "id": monitor_id,
     }
+
+@router.put("/{monitor_id}")
+def update_monitor(
+    monitor_id: int,
+    monitor_data: MonitorCreate,
+    db: Session = Depends(get_db),
+):
+    monitor = db.query(Monitor).filter(Monitor.id == monitor_id).first()
+
+    if not monitor:
+        return {"error": "Monitor not found"}
+
+    monitor.name = monitor_data.name
+    monitor.url = str(monitor_data.url)
+    monitor.interval_seconds = monitor_data.interval_seconds
+    monitor.expected_status = monitor_data.expected_status
+
+    db.commit()
+    db.refresh(monitor)
+
+    return {
+        "id": monitor.id,
+        "name": monitor.name,
+        "url": monitor.url,
+        "interval_seconds": monitor.interval_seconds,
+        "expected_status": monitor.expected_status,
+        "is_active": monitor.is_active,
+    }
