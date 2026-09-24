@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.dependencies import get_db
@@ -60,7 +60,10 @@ def get_monitor(
     monitor = db.query(Monitor).filter(Monitor.id == monitor_id).first()
 
     if not monitor:
-        return {"error": "Monitor not found"}
+        raise HTTPException(
+            status_code=404,
+            detail="Monitor not found",
+        )
 
     return {
         "id": monitor.id,
@@ -79,7 +82,10 @@ def delete_monitor(
     monitor = db.query(Monitor).filter(Monitor.id == monitor_id).first()
 
     if not monitor:
-        return {"error": "Monitor not found"}
+        raise HTTPException(
+            status_code=404,
+            detail="Monitor not found",
+        )
 
     db.delete(monitor)
     db.commit()
@@ -98,7 +104,10 @@ def update_monitor(
     monitor = db.query(Monitor).filter(Monitor.id == monitor_id).first()
 
     if not monitor:
-        return {"error": "Monitor not found"}
+        raise HTTPException(
+            status_code=404,
+            detail="Monitor not found",
+        )
 
     monitor.name = monitor_data.name
     monitor.url = str(monitor_data.url)
