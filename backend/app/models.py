@@ -11,8 +11,8 @@ class Monitor(Base):
     __tablename__ = "monitors"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String(100))
-    url: Mapped[str] = mapped_column(String(500))
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
+    url: Mapped[str] = mapped_column(String(500), nullable=False)
     interval_seconds: Mapped[int] = mapped_column(Integer, default=60)
     expected_status: Mapped[int] = mapped_column(Integer, default=200)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
