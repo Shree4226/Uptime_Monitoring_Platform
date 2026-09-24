@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.dependencies import get_db
 from app.models import Monitor
-from app.schemas import MonitorCreate, MonitorResponse
+from app.schemas import MonitorCreate, MonitorResponse, MonitorStatusResponse
 
 
 router = APIRouter(
@@ -97,7 +97,7 @@ def update_monitor(
 
     return monitor
 
-@router.patch("/{monitor_id}/status")
+@router.patch("/{monitor_id}/status",response_model=MonitorStatusResponse)
 def update_monitor_status(
     monitor_id: int,
     is_active: bool,

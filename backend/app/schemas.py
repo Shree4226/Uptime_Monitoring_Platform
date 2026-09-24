@@ -23,3 +23,8 @@ class MonitorResponse(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
+class MonitorStatusResponse(BaseModel):
+    id: int
+    is_active: bool
+    message: str
