@@ -1,3 +1,4 @@
+from datetime import datetime
 from app.celery_app import celery_app
 from app.database import SessionLocal
 from app.models import Monitor
@@ -28,6 +29,9 @@ def check_monitor(monitor_id: int):
             monitor,
             result,
         )
+
+        monitor.last_checked_at = datetime.utcnow()
+        db.commit()
 
         return {
             "success": True,

@@ -25,6 +25,10 @@ class Monitor(Base):
         default=datetime.utcnow,
         onupdate=datetime.utcnow,
     )
+    last_checked_at: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True,
+    )
     checks: Mapped[list["Check"]] = relationship(
         back_populates="monitor",
     )
