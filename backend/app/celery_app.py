@@ -9,3 +9,10 @@ celery_app = Celery(
     backend=settings.redis_backend_url,
     include=["app.tasks.check_tasks"],
 )
+
+celery_app.conf.beat_schedule = {
+    "schedule-monitor-checks": {
+        "task": "app.tasks.check_tasks.schedule_monitor_checks",
+        "schedule": 10.0,
+    },
+}
