@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.database import create_tables
 
 from app.config import settings
 
@@ -8,6 +9,7 @@ from app.routers.monitors import router as monitors_router
 from app.routers.checks import router as checks_router
 
 app = FastAPI(title=settings.app_name)
+create_tables()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
