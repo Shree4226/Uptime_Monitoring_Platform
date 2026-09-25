@@ -95,3 +95,18 @@ class MonitorBucketedTimeseriesResponse(BaseModel):
     period: str
     interval_minutes: int
     data: list[MonitorTimeseriesBucket]
+
+class IncidentResponse(BaseModel):
+    id: int
+    monitor_id: int
+    started_at: datetime
+    resolved_at: datetime | None
+    is_resolved: bool
+
+    model_config = {
+        "from_attributes": True
+    }
+
+
+class IncidentListResponse(BaseModel):
+    incidents: list[IncidentResponse]

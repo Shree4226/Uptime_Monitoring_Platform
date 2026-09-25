@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 
 from app.dependencies import get_db
-from app.models import Monitor, User, Check
+from app.models import Monitor, User, Check, Incident
 from app.schemas import (
     MonitorCreate,
     MonitorResponse,
@@ -13,6 +13,7 @@ from app.schemas import (
     MonitorAnalyticsResponse,
     MonitorTimeseriesResponse,
     MonitorBucketedTimeseriesResponse,
+    IncidentListResponse,
 )
 from app.auth_dependencies import get_current_user
 
@@ -484,4 +485,36 @@ def get_bucketed_timeseries(
         "period": period,
         "interval_minutes": interval_minutes,
         "data": data,
+    }
+
+@router.get("/{monitor_id}/incidents", response_model=IncidentListResponse)
+def get_monitor_incidents(
+    monitor_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    monitor = (
+        db.query(Monitor)
+        .filter(
+            Monitor.id == monitor_id,
+            Monitor.user_id == current_user.id,
+        )
+        .first()
+    )
+
+    if not monitor:
+        raise HTTPException(
+            status_code=404,
+            detail="Monitor not found",
+        )
+
+    incidents = (
+        db.query(Incident)
+        .filter(Incident.monitor_id == monitor_id)
+        .order_by(Incident.started_at.desc())
+        .all()
+    )
+
+    return {
+        "incidents": incidents
     }

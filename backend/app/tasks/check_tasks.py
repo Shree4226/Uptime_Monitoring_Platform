@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta
 from app.celery_app import celery_app
 from app.database import SessionLocal
-from app.models import Monitor
+from app.models import Monitor, Incident
 from app.services.check_service import perform_check, save_check
+
+FAILURE_THRESHOLD = 3
 
 
 @celery_app.task
@@ -32,6 +34,42 @@ def check_monitor(monitor_id: int):
             monitor,
             result,
         )
+
+        if check.is_success:
+            monitor.consecutive_failures = 0
+
+            open_incident = (
+                db.query(Incident)
+                .filter(
+                    Incident.monitor_id == monitor.id,
+                    Incident.is_resolved == False,
+                )
+                .first()
+            )
+
+            if open_incident:
+                open_incident.is_resolved = True
+                open_incident.resolved_at = datetime.utcnow()
+
+        else:
+            monitor.consecutive_failures += 1
+
+            if monitor.consecutive_failures >= FAILURE_THRESHOLD:
+                open_incident = (
+                    db.query(Incident)
+                    .filter(
+                        Incident.monitor_id == monitor.id,
+                        Incident.is_resolved == False,
+                    )
+                    .first()
+                )
+
+                if not open_incident:
+                    incident = Incident(
+                        monitor_id=monitor.id,
+                    )
+
+                    db.add(incident)
 
         monitor.last_checked_at = datetime.utcnow()
         db.commit()

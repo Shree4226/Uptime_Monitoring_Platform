@@ -60,9 +60,20 @@ class Monitor(Base):
         DateTime,
         nullable=True,
     )
+    consecutive_failures: Mapped[int] = mapped_column(
+        Integer,
+        default=0,
+        nullable=False,
+    )
+    
     checks: Mapped[list["Check"]] = relationship(
         back_populates="monitor",
     )
+
+    incidents: Mapped[list["Incident"]] = relationship(
+        back_populates="monitor",
+    )
+
     user: Mapped["User"] = relationship(
         back_populates="monitors",
     )
@@ -99,4 +110,37 @@ class Check(Base):
 
     monitor: Mapped["Monitor"] = relationship(
         back_populates="checks",
+    )
+
+class Incident(Base):
+    __tablename__ = "incidents"
+
+    id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True,
+    )
+
+    monitor_id: Mapped[int] = mapped_column(
+        ForeignKey("monitors.id"),
+        nullable=False,
+    )
+
+    started_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.utcnow,
+    )
+
+    resolved_at: Mapped[datetime | None] = mapped_column(
+        DateTime,
+        nullable=True,
+    )
+
+    is_resolved: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )
+
+    monitor: Mapped["Monitor"] = relationship(
+        back_populates="incidents",
     )
