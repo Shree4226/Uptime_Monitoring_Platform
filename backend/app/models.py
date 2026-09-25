@@ -29,11 +29,18 @@ class User(Base):
         DateTime,
         default=datetime.utcnow,
     )
+    monitors: Mapped[list["Monitor"]] = relationship(
+        back_populates="user",
+    )
 
 
 class Monitor(Base):
     __tablename__ = "monitors"
 
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"),
+        nullable=False,
+    )
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     url: Mapped[str] = mapped_column(String(500), nullable=False)
@@ -55,6 +62,9 @@ class Monitor(Base):
     )
     checks: Mapped[list["Check"]] = relationship(
         back_populates="monitor",
+    )
+    user: Mapped["User"] = relationship(
+        back_populates="monitors",
     )
 
 class Check(Base):
