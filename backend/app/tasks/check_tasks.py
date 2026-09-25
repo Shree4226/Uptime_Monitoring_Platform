@@ -12,7 +12,10 @@ def check_monitor(monitor_id: int):
     try:
         monitor = (
             db.query(Monitor)
-            .filter(Monitor.id == monitor_id)
+            .filter(
+                Monitor.id == monitor_id,
+                Monitor.is_active == True,
+            )
             .first()
         )
 
