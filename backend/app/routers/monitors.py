@@ -79,8 +79,16 @@ def get_monitor(
 def delete_monitor(
     monitor_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
-    monitor = db.query(Monitor).filter(Monitor.id == monitor_id).first()
+    monitor = (
+        db.query(Monitor)
+        .filter(
+            Monitor.id == monitor_id,
+            Monitor.user_id == current_user.id,
+        )
+        .first()
+    )
 
     if not monitor:
         raise HTTPException(
@@ -95,7 +103,7 @@ def delete_monitor(
         "message": "Monitor deleted successfully",
         "id": monitor_id,
     }
-
+    
 @router.put("/{monitor_id}", response_model=MonitorResponse)
 def update_monitor(
     monitor_id: int,
