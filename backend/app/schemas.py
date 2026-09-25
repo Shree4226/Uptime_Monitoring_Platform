@@ -64,3 +64,12 @@ class CheckResponse(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
+class MonitorAnalyticsResponse(BaseModel):
+    total_checks: int
+    successful_checks: int
+    failed_checks: int
+    uptime_percentage: float
+    average_response_time_ms: float | None
+    min_response_time_ms: int | None
+    max_response_time_ms: int | None
