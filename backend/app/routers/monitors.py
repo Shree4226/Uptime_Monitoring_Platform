@@ -101,8 +101,16 @@ def update_monitor(
     monitor_id: int,
     monitor_data: MonitorCreate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
-    monitor = db.query(Monitor).filter(Monitor.id == monitor_id).first()
+    monitor = (
+        db.query(Monitor)
+        .filter(
+            Monitor.id == monitor_id,
+            Monitor.user_id == current_user.id,
+        )
+        .first()
+    )
 
     if not monitor:
         raise HTTPException(
@@ -114,6 +122,7 @@ def update_monitor(
     monitor.url = str(monitor_data.url)
     monitor.interval_seconds = monitor_data.interval_seconds
     monitor.expected_status = monitor_data.expected_status
+    monitor.is_active = monitor_data.is_active
 
     db.commit()
     db.refresh(monitor)
