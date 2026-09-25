@@ -73,3 +73,13 @@ class MonitorAnalyticsResponse(BaseModel):
     average_response_time_ms: float | None
     min_response_time_ms: int | None
     max_response_time_ms: int | None
+
+class MonitorTimeseriesPoint(BaseModel):
+    timestamp: datetime
+    response_time_ms: int | None
+    is_success: bool
+
+
+class MonitorTimeseriesResponse(BaseModel):
+    period: str
+    data: list[MonitorTimeseriesPoint]

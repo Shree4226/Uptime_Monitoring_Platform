@@ -11,6 +11,7 @@ from app.schemas import (
     MonitorDeleteResponse,
     CheckResponse,
     MonitorAnalyticsResponse,
+    MonitorTimeseriesResponse,
 )
 from app.auth_dependencies import get_current_user
 
@@ -297,4 +298,67 @@ def get_monitor_analytics(
         "average_response_time_ms": average_response_time_ms,
         "min_response_time_ms": min_response_time_ms,
         "max_response_time_ms": max_response_time_ms,
+    }
+
+@router.get(
+    "/{monitor_id}/analytics/timeseries",
+    response_model=MonitorTimeseriesResponse,
+)
+def get_monitor_timeseries(
+    monitor_id: int,
+    period: str = Query("24h"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    monitor = (
+        db.query(Monitor)
+        .filter(
+            Monitor.id == monitor_id,
+            Monitor.user_id == current_user.id,
+        )
+        .first()
+    )
+
+    if not monitor:
+        raise HTTPException(
+            status_code=404,
+            detail="Monitor not found",
+        )
+
+    if period == "1h":
+        duration = timedelta(hours=1)
+    elif period == "24h":
+        duration = timedelta(hours=24)
+    elif period == "7d":
+        duration = timedelta(days=7)
+    elif period == "30d":
+        duration = timedelta(days=30)
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid period. Use 1h, 24h, 7d, or 30d.",
+        )
+
+    start_time = datetime.utcnow() - duration
+
+    checks = (
+        db.query(Check)
+        .filter(
+            Check.monitor_id == monitor_id,
+            Check.created_at >= start_time,
+        )
+        .order_by(Check.created_at.asc())
+        .all()
+    )
+
+    return {
+        "period": period,
+        "data": [
+            {
+                "timestamp": check.created_at,
+                "response_time_ms": check.response_time_ms,
+                "is_success": check.is_success,
+            }
+            for check in checks
+        ],
     }
