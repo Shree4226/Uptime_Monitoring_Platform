@@ -9,6 +9,11 @@ from app.routers.monitors import router as monitors_router
 from app.routers.checks import router as checks_router
 from app.routers.auth import router as auth_router
 
+from fastapi import Depends
+
+from app.auth_dependencies import get_current_user
+from app.models import User
+
 app = FastAPI(title=settings.app_name)
 create_tables()
 app.add_middleware(
@@ -23,4 +28,12 @@ app.include_router(health_router)
 app.include_router(monitors_router)
 app.include_router(checks_router)
 app.include_router(auth_router)
+
+@app.get("/auth/me")
+def get_me(current_user: User = Depends(get_current_user)):
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "username": current_user.username,
+    }
 
