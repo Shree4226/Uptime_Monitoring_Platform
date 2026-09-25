@@ -8,6 +8,9 @@ class Settings(BaseSettings):
     redis_broker_url: str
     redis_backend_url: str
 
+    secret_key: str
+    algorithm: str = "HS256"
+
     model_config = SettingsConfigDict(env_file=".env")
 
 
