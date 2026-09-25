@@ -137,13 +137,24 @@ def update_monitor(
 
     return monitor
 
-@router.patch("/{monitor_id}/status",response_model=MonitorStatusResponse)
+@router.patch(
+    "/{monitor_id}/status",
+    response_model=MonitorStatusResponse,
+)
 def update_monitor_status(
     monitor_id: int,
     is_active: bool,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
-    monitor = db.query(Monitor).filter(Monitor.id == monitor_id).first()
+    monitor = (
+        db.query(Monitor)
+        .filter(
+            Monitor.id == monitor_id,
+            Monitor.user_id == current_user.id,
+        )
+        .first()
+    )
 
     if not monitor:
         raise HTTPException(
