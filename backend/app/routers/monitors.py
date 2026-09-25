@@ -12,6 +12,7 @@ from app.schemas import (
     CheckResponse,
     MonitorAnalyticsResponse,
     MonitorTimeseriesResponse,
+    MonitorBucketedTimeseriesResponse,
 )
 from app.auth_dependencies import get_current_user
 
@@ -361,4 +362,126 @@ def get_monitor_timeseries(
             }
             for check in checks
         ],
+    }
+
+@router.get(
+    "/{monitor_id}/analytics/timeseries/bucketed",
+    response_model=MonitorBucketedTimeseriesResponse,
+)
+def get_bucketed_timeseries(
+    monitor_id: int,
+    period: str = Query("24h"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    monitor = (
+        db.query(Monitor)
+        .filter(
+            Monitor.id == monitor_id,
+            Monitor.user_id == current_user.id,
+        )
+        .first()
+    )
+
+    if not monitor:
+        raise HTTPException(
+            status_code=404,
+            detail="Monitor not found",
+        )
+
+    if period == "1h":
+        duration = timedelta(hours=1)
+        interval_minutes = 1
+    elif period == "24h":
+        duration = timedelta(hours=24)
+        interval_minutes = 5
+    elif period == "7d":
+        duration = timedelta(days=7)
+        interval_minutes = 60
+    elif period == "30d":
+        duration = timedelta(days=30)
+        interval_minutes = 360
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid period. Use 1h, 24h, 7d, or 30d.",
+        )
+
+    start_time = datetime.utcnow() - duration
+
+    checks = (
+        db.query(Check)
+        .filter(
+            Check.monitor_id == monitor_id,
+            Check.created_at >= start_time,
+        )
+        .order_by(Check.created_at.asc())
+        .all()
+    )
+
+    buckets = {}
+
+    for check in checks:
+        elapsed_minutes = int(
+            (check.created_at - start_time).total_seconds() // 60
+        )
+
+        bucket_index = elapsed_minutes // interval_minutes
+
+        bucket_start = (
+            start_time
+            + timedelta(
+                minutes=bucket_index * interval_minutes
+            )
+        )
+
+        bucket_key = bucket_start
+
+        if bucket_key not in buckets:
+            buckets[bucket_key] = []
+
+        buckets[bucket_key].append(check)
+
+    data = []
+
+    for bucket_start, bucket_checks in buckets.items():
+        total_checks = len(bucket_checks)
+
+        successful_checks = sum(
+            1
+            for check in bucket_checks
+            if check.is_success
+        )
+
+        response_times = [
+            check.response_time_ms
+            for check in bucket_checks
+            if check.response_time_ms is not None
+        ]
+
+        average_response_time_ms = (
+            sum(response_times) / len(response_times)
+            if response_times
+            else None
+        )
+
+        uptime_percentage = (
+            (successful_checks / total_checks) * 100
+            if total_checks > 0
+            else 0.0
+        )
+
+        data.append(
+            {
+                "timestamp": bucket_start,
+                "average_response_time_ms": average_response_time_ms,
+                "uptime_percentage": uptime_percentage,
+                "total_checks": total_checks,
+            }
+        )
+
+    return {
+        "period": period,
+        "interval_minutes": interval_minutes,
+        "data": data,
     }

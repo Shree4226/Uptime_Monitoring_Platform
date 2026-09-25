@@ -83,3 +83,15 @@ class MonitorTimeseriesPoint(BaseModel):
 class MonitorTimeseriesResponse(BaseModel):
     period: str
     data: list[MonitorTimeseriesPoint]
+
+class MonitorTimeseriesBucket(BaseModel):
+    timestamp: datetime
+    average_response_time_ms: float | None
+    uptime_percentage: float
+    total_checks: int
+
+
+class MonitorBucketedTimeseriesResponse(BaseModel):
+    period: str
+    interval_minutes: int
+    data: list[MonitorTimeseriesBucket]
