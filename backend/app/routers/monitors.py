@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.dependencies import get_db
-from app.models import Monitor
+from app.models import Monitor, User
 from app.schemas import (
     MonitorCreate,
     MonitorResponse,
@@ -10,6 +10,7 @@ from app.schemas import (
     MonitorDeleteResponse,
     CheckResponse,
 )
+from app.auth_dependencies import get_current_user
 
 router = APIRouter(
     prefix="/monitors",
@@ -21,8 +22,10 @@ router = APIRouter(
 def create_monitor(
     monitor_data: MonitorCreate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     monitor = Monitor(
+        user_id=current_user.id,
         name=monitor_data.name,
         url=str(monitor_data.url),
         interval_seconds=monitor_data.interval_seconds,
@@ -37,8 +40,15 @@ def create_monitor(
     return monitor
 
 @router.get("/", response_model=list[MonitorResponse])
-def get_monitors(db: Session = Depends(get_db)):
-    monitors = db.query(Monitor).all()
+def get_monitors(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    monitors = (
+        db.query(Monitor)
+        .filter(Monitor.user_id == current_user.id)
+        .all()
+    )
 
     return monitors
 
@@ -46,8 +56,16 @@ def get_monitors(db: Session = Depends(get_db)):
 def get_monitor(
     monitor_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
-    monitor = db.query(Monitor).filter(Monitor.id == monitor_id).first()
+    monitor = (
+        db.query(Monitor)
+        .filter(
+            Monitor.id == monitor_id,
+            Monitor.user_id == current_user.id,
+        )
+        .first()
+    )
 
     if not monitor:
         raise HTTPException(
