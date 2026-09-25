@@ -4,7 +4,6 @@ from app.database import SessionLocal
 from app.models import Monitor, Incident
 from app.services.check_service import perform_check, save_check
 
-FAILURE_THRESHOLD = 3
 
 
 @celery_app.task
@@ -54,7 +53,7 @@ def check_monitor(monitor_id: int):
         else:
             monitor.consecutive_failures += 1
 
-            if monitor.consecutive_failures >= FAILURE_THRESHOLD:
+            if monitor.consecutive_failures >= monitor.failure_threshold:
                 open_incident = (
                     db.query(Incident)
                     .filter(

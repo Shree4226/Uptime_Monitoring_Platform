@@ -46,6 +46,8 @@ class Monitor(Base):
     url: Mapped[str] = mapped_column(String(500), nullable=False)
     interval_seconds: Mapped[int] = mapped_column(Integer, default=60)
     expected_status: Mapped[int] = mapped_column(Integer, default=200)
+    retry_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    failure_threshold: Mapped[int] = mapped_column(Integer, default=3, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
@@ -65,7 +67,7 @@ class Monitor(Base):
         default=0,
         nullable=False,
     )
-    
+
     checks: Mapped[list["Check"]] = relationship(
         back_populates="monitor",
     )

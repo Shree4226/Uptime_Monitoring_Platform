@@ -7,33 +7,37 @@ from app.models import Monitor
 
 
 def perform_check(monitor: Monitor):
-    start_time = time.perf_counter()
+    attempts = monitor.retry_count + 1
 
-    try:
-        response = httpx.get(
-            monitor.url,
-            timeout=10,
-            follow_redirects=True,
-        )
+    for attempt in range(attempts):
+        start_time = time.perf_counter()
 
-        elapsed_ms = int(
-            (time.perf_counter() - start_time) * 1000
-        )
+        try:
+            response = httpx.get(
+                monitor.url,
+                timeout=10,
+                follow_redirects=True,
+            )
 
-        is_success = response.status_code == monitor.expected_status
+            elapsed_ms = int(
+                (time.perf_counter() - start_time) * 1000
+            )
 
-        return {
-            "status_code": response.status_code,
-            "response_time_ms": elapsed_ms,
-            "is_success": is_success,
-        }
+            is_success = response.status_code == monitor.expected_status
 
-    except httpx.RequestError:
-        return {
-            "status_code": None,
-            "response_time_ms": None,
-            "is_success": False,
-        }
+            return {
+                "status_code": response.status_code,
+                "response_time_ms": elapsed_ms,
+                "is_success": is_success,
+            }
+
+        except httpx.RequestError:
+            if attempt == attempts - 1:
+                return {
+                    "status_code": None,
+                    "response_time_ms": None,
+                    "is_success": False,
+                }
 
 from sqlalchemy.orm import Session
 

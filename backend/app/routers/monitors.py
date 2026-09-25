@@ -135,6 +135,8 @@ def update_monitor(
     monitor.url = str(monitor_data.url)
     monitor.interval_seconds = monitor_data.interval_seconds
     monitor.expected_status = monitor_data.expected_status
+    monitor.retry_count = monitor_data.retry_count
+    monitor.failure_threshold = monitor_data.failure_threshold
     monitor.is_active = monitor_data.is_active
 
     db.commit()
