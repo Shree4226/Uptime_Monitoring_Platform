@@ -1,3 +1,4 @@
+import json
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
@@ -35,12 +36,24 @@ def create_monitor(
         url=str(monitor_data.url),
         interval_seconds=monitor_data.interval_seconds,
         expected_status=monitor_data.expected_status,
+        method=monitor_data.method,
+        timeout_seconds=monitor_data.timeout_seconds,
+        headers=json.dumps(monitor_data.headers) if monitor_data.headers else None,
+        body=monitor_data.body,
+        retry_count=monitor_data.retry_count,
+        failure_threshold=monitor_data.failure_threshold,
         is_active=monitor_data.is_active,
     )
 
     db.add(monitor)
     db.commit()
     db.refresh(monitor)
+
+    monitor.headers = (
+        json.loads(monitor.headers)
+        if monitor.headers
+        else None
+    )
 
     return monitor
 
@@ -54,6 +67,13 @@ def get_monitors(
         .filter(Monitor.user_id == current_user.id)
         .all()
     )
+
+    for monitor in monitors:
+        monitor.headers = (
+            json.loads(monitor.headers)
+            if monitor.headers
+            else None
+        )
 
     return monitors
 
@@ -70,6 +90,12 @@ def get_monitor(
             Monitor.user_id == current_user.id,
         )
         .first()
+    )
+
+    monitor.headers = (
+        json.loads(monitor.headers)
+        if monitor.headers
+        else None
     )
 
     if not monitor:
@@ -135,12 +161,26 @@ def update_monitor(
     monitor.url = str(monitor_data.url)
     monitor.interval_seconds = monitor_data.interval_seconds
     monitor.expected_status = monitor_data.expected_status
+    monitor.method = monitor_data.method
+    monitor.timeout_seconds = monitor_data.timeout_seconds
+    monitor.headers = (
+        json.dumps(monitor_data.headers)
+        if monitor_data.headers
+        else None
+    )
+    monitor.body = monitor_data.body
     monitor.retry_count = monitor_data.retry_count
     monitor.failure_threshold = monitor_data.failure_threshold
     monitor.is_active = monitor_data.is_active
 
     db.commit()
     db.refresh(monitor)
+
+    monitor.headers = (
+        json.loads(monitor.headers)
+        if monitor.headers
+        else None
+    )
 
     return monitor
 

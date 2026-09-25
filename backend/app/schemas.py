@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field, HttpUrl, EmailStr
 
+from typing import Any
+
 class UserCreate(BaseModel):
     email: EmailStr
     username: str = Field(..., min_length=3, max_length=100)
@@ -28,6 +30,12 @@ class MonitorCreate(BaseModel):
     url: HttpUrl = Field(..., max_length=500)
     interval_seconds: int = Field(default=60, ge=10, le=86400)
     expected_status: int = Field(default=200, ge=100, le=599)
+
+    method: str = Field(default="GET", pattern="^(GET|POST|PUT|PATCH|DELETE)$")
+    timeout_seconds: int = Field(default=10, ge=1, le=60)
+    headers: dict[str, str] | None = None
+    body: str | None = Field(default=None, max_length=10000)
+
     retry_count: int = Field(default=0, ge=0, le=5)
     failure_threshold: int = Field(default=3, ge=1, le=10)
     is_active: bool = True
@@ -38,6 +46,12 @@ class MonitorResponse(BaseModel):
     url: HttpUrl
     interval_seconds: int
     expected_status: int
+
+    method: str
+    timeout_seconds: int
+    headers: dict[str, str] | None
+    body: str | None
+
     retry_count: int
     failure_threshold: int
     is_active: bool

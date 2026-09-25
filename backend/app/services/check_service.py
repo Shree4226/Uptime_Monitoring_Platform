@@ -1,21 +1,29 @@
 import time
+import json
 
 import httpx
 from sqlalchemy.orm import Session
 
-from app.models import Monitor
+from app.models import Check, Monitor
 
 
 def perform_check(monitor: Monitor):
     attempts = monitor.retry_count + 1
+    headers = None
+
+    if monitor.headers:
+        headers = json.loads(monitor.headers)
 
     for attempt in range(attempts):
         start_time = time.perf_counter()
 
         try:
-            response = httpx.get(
-                monitor.url,
-                timeout=10,
+            response = httpx.request(
+                method=monitor.method,
+                url=monitor.url,
+                headers=headers,
+                content=monitor.body,
+                timeout=monitor.timeout_seconds,
                 follow_redirects=True,
             )
 
@@ -38,10 +46,6 @@ def perform_check(monitor: Monitor):
                     "response_time_ms": None,
                     "is_success": False,
                 }
-
-from sqlalchemy.orm import Session
-
-from app.models import Check, Monitor
 
 
 def save_check(

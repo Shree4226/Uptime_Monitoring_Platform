@@ -46,8 +46,15 @@ class Monitor(Base):
     url: Mapped[str] = mapped_column(String(500), nullable=False)
     interval_seconds: Mapped[int] = mapped_column(Integer, default=60)
     expected_status: Mapped[int] = mapped_column(Integer, default=200)
+
+    method: Mapped[str] = mapped_column(String(10), default="GET", nullable=False)
+    timeout_seconds: Mapped[int] = mapped_column(Integer, default=10, nullable=False)
+    headers: Mapped[str | None] = mapped_column(String(5000), nullable=True)
+    body: Mapped[str | None] = mapped_column(String(10000), nullable=True)
+
     retry_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     failure_threshold: Mapped[int] = mapped_column(Integer, default=3, nullable=False)
+
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
