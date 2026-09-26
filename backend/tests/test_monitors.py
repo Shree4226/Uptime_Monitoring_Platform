@@ -439,3 +439,20 @@ def test_monitor_incidents(client, db):
     assert len(data["incidents"]) == 1
     assert data["incidents"][0]["monitor_id"] == monitor_id
     assert data["incidents"][0]["is_resolved"] is False
+
+def test_get_monitor_not_found(client):
+    token = register_and_login(
+        client,
+        "monitor_not_found@example.com",
+        "monitor_not_found",
+    )
+
+    response = client.get(
+        "/monitors/999999",
+        headers={
+            "Authorization": f"Bearer {token}",
+        },
+    )
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Monitor not found"

@@ -92,18 +92,18 @@ def get_monitor(
         .first()
     )
 
-    monitor.headers = (
-        json.loads(monitor.headers)
-        if monitor.headers
-        else None
-    )
-
     if not monitor:
         raise HTTPException(
             status_code=404,
             detail="Monitor not found",
         )
 
+    monitor.headers = (
+        json.loads(monitor.headers)
+        if monitor.headers
+        else None
+    )
+    
     return monitor
 
 @router.delete("/{monitor_id}", response_model=MonitorDeleteResponse)
