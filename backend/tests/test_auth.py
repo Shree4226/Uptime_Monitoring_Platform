@@ -39,3 +39,24 @@ def test_login_user(client):
 
     assert "access_token" in data
     assert data["token_type"] == "bearer"
+
+def test_login_wrong_password(client):
+    client.post(
+        "/auth/register",
+        json={
+            "email": "pytest_wrong_password@example.com",
+            "username": "pytest_wrong_password",
+            "password": "password123",
+        },
+    )
+
+    response = client.post(
+        "/auth/login",
+        json={
+            "email": "pytest_wrong_password@example.com",
+            "password": "wrongpassword",
+        },
+    )
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid email or password"
