@@ -49,3 +49,6 @@ jobs:
       - name: Run tests
         working-directory: backend
         run: pytest tests
+      
+      - name: Build Docker image
+        run: docker build -t uptime-backend ./backend
