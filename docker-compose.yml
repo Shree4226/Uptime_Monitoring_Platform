@@ -39,6 +39,32 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+  
+  celery-worker:
+    build:
+      context: ./backend
+    container_name: uptime-celery-worker
+    env_file:
+      - .env.docker
+    command: celery -A app.celery_app.celery_app worker --loglevel=info
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  celery-beat:
+    build:
+      context: ./backend
+    container_name: uptime-celery-beat
+    env_file:
+      - .env.docker
+    command: celery -A app.celery_app.celery_app beat --loglevel=info
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
 volumes:
   postgres_data:
