@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import create_tables
 
@@ -10,12 +11,25 @@ from app.routers.checks import router as checks_router
 from app.routers.auth import router as auth_router
 from app.routers.dashboard import router as dashboard_router
 
-from fastapi import Depends
 
 from app.auth_dependencies import get_current_user
 from app.models import User
 
 app = FastAPI(title=settings.app_name)
+
+@app.exception_handler(Exception)
+async def global_exception_handler(
+    request: Request,
+    exc: Exception,
+):
+    return JSONResponse(
+        status_code=500,
+        content={
+            "detail": "Internal server error"
+        },
+    )
+
+
 create_tables()
 app.add_middleware(
     CORSMiddleware,
