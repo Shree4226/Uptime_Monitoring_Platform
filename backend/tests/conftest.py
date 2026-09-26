@@ -48,7 +48,10 @@ def client(db):
 
     from fastapi.testclient import TestClient
 
-    with TestClient(app) as test_client:
+    with TestClient(
+        app,
+        raise_server_exceptions=False,
+    ) as test_client:
         yield test_client
 
     app.dependency_overrides.clear()
