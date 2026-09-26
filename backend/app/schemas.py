@@ -128,3 +128,13 @@ class IncidentResponse(BaseModel):
 
 class IncidentListResponse(BaseModel):
     incidents: list[IncidentResponse]
+
+class DashboardSummaryResponse(BaseModel):
+    total_monitors: int
+    up_monitors: int
+    down_monitors: int
+    active_monitors: int
+    paused_monitors: int
+    active_incidents: int
+    overall_uptime_percentage: float
+    average_response_time_ms: float | None
