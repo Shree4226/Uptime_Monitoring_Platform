@@ -11,6 +11,12 @@ on:
 
 jobs:
   test:
+    env:
+      DATABASE_URL: postgresql+psycopg://uptime_user:uptime_password@localhost:5432/uptime_test_db
+      REDIS_BROKER_URL: redis://localhost:6379/0
+      REDIS_BACKEND_URL: redis://localhost:6379/0
+      SECRET_KEY: test-secret-key
+
     runs-on: ubuntu-latest
 
     services:
