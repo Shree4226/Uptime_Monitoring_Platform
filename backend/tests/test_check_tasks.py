@@ -45,7 +45,8 @@ def create_monitor(db, **kwargs):
     return monitor
 
 
-def test_check_monitor_success(monkeypatch, db):
+def test_check_monitor_success(monkeypatch, db,caplog):
+    caplog.set_level("INFO")
     monitor = create_monitor(db)
     use_test_db(monkeypatch, db)
 
@@ -68,6 +69,9 @@ def test_check_monitor_success(monkeypatch, db):
     assert result["status_code"] == 200
     assert result["is_success"] is True
 
+    assert "Starting check for monitor_id=" in caplog.text
+    assert "Check completed:" in caplog.text
+
     check = db.query(Check).filter(
         Check.monitor_id == monitor.id
     ).first()
@@ -82,7 +86,8 @@ def test_check_monitor_success(monkeypatch, db):
     assert updated_monitor.last_checked_at is not None
 
 
-def test_check_monitor_failure_opens_incident(monkeypatch, db):
+def test_check_monitor_failure_opens_incident(monkeypatch, db,caplog):
+    caplog.set_level("WARNING")
     monitor = create_monitor(
         db,
         failure_threshold=2,
@@ -131,8 +136,13 @@ def test_check_monitor_failure_opens_incident(monkeypatch, db):
     assert incident.is_resolved is False
     assert incident.resolved_at is None
 
+    assert "Incident opened for monitor_id=" in caplog.text
+    assert "consecutive failures" in caplog.text
 
-def test_check_monitor_resolves_incident(monkeypatch, db):
+
+def test_check_monitor_resolves_incident(monkeypatch, db, caplog):
+    caplog.set_level("INFO")
+
     monitor = create_monitor(
         db,
         failure_threshold=1,
@@ -187,6 +197,8 @@ def test_check_monitor_resolves_incident(monkeypatch, db):
     updated_monitor = db.get(Monitor, monitor.id)
 
     assert updated_monitor.consecutive_failures == 0
+
+    assert "Incident resolved for monitor_id=" in caplog.text
 
 
 def test_check_monitor_inactive_monitor(db):

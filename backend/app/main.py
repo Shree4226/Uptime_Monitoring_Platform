@@ -11,9 +11,12 @@ from app.routers.checks import router as checks_router
 from app.routers.auth import router as auth_router
 from app.routers.dashboard import router as dashboard_router
 
-
 from app.auth_dependencies import get_current_user
 from app.models import User
+
+from app.logging_config import setup_logging
+
+setup_logging()
 
 app = FastAPI(title=settings.app_name)
 
