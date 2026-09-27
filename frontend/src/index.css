@@ -802,3 +802,82 @@ input {
     grid-column: span 1;
   }
 }
+
+.incidents-card {
+  margin-bottom: 20px;
+}
+
+.incident-group {
+  margin-top: 24px;
+}
+
+.incident-group h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  color: #111827;
+}
+
+.incident-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.incident-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+}
+
+.incident-item > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.incident-item strong {
+  color: #111827;
+  font-size: 14px;
+}
+
+.incident-item span {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.incident-status {
+  flex-shrink: 0;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px !important;
+  font-weight: 600;
+}
+
+.incident-active {
+  border-left: 4px solid #dc2626;
+}
+
+.incident-active .incident-status {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.incident-resolved {
+  border-left: 4px solid #16a34a;
+}
+
+.incident-resolved .incident-status {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.empty-state {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}

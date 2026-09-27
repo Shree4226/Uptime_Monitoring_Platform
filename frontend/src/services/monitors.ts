@@ -16,6 +16,13 @@ export type Monitor = {
   created_at: string
   updated_at: string
 }
+export type Incident = {
+  id: number
+  monitor_id: number
+  started_at: string
+  resolved_at: string | null
+  is_resolved: boolean
+}
 
 export async function getMonitors() {
   const response = await api.get<Monitor[]>("/monitors/")
@@ -125,4 +132,12 @@ export async function getMonitorTimeSeries(
   )
 
   return response.data
+}
+
+export async function getMonitorIncidents(monitorId: number) {
+  const response = await api.get<{ incidents: Incident[] }>(
+    `/monitors/${monitorId}/incidents`,
+  )
+
+  return response.data.incidents
 }

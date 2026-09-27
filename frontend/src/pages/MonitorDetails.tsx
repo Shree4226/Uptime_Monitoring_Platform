@@ -5,9 +5,11 @@ import {
   getMonitor,
   getMonitorAnalytics,
   getMonitorTimeSeries,
+  getMonitorIncidents,
   type Monitor,
   type MonitorAnalytics,
   type MonitorTimeSeries,
+  type Incident,
 } from "../services/monitors"
 import {
   Line,
@@ -31,6 +33,7 @@ function MonitorDetails() {
     "1h" | "24h" | "7d" | "30d"
   >("24h")
   const [timeSeries, setTimeSeries] = useState<MonitorTimeSeries | null>(null)
+  const [incidents, setIncidents] = useState<Incident[]>([])
 
   useEffect(() => {
     if (!monitorId) return
@@ -38,8 +41,10 @@ function MonitorDetails() {
     const fetchMonitorData = async () => {
         try {
         const monitorData = await getMonitor(Number(monitorId))
-
         setMonitor(monitorData)
+
+        const incidentsData = await getMonitorIncidents(Number(monitorId))
+        setIncidents(incidentsData)
         } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
             setError(
@@ -346,6 +351,81 @@ function MonitorDetails() {
             </div>
             )}
             </section>
+
+        <section className="dashboard-card incidents-card">
+  <div className="section-header">
+    <div>
+      <h2>Incidents</h2>
+      <p>Monitor failure and recovery history.</p>
+    </div>
+  </div>
+
+  {incidents.length === 0 ? (
+    <p className="empty-state">No incidents recorded.</p>
+  ) : (
+    <>
+      <div className="incident-group">
+        <h3>Active Incidents</h3>
+
+        {incidents.filter((incident) => !incident.is_resolved).length === 0 ? (
+          <p className="empty-state">No active incidents.</p>
+        ) : (
+          <div className="incident-list">
+            {incidents
+              .filter((incident) => !incident.is_resolved)
+              .map((incident) => (
+                <div className="incident-item incident-active" key={incident.id}>
+                  <div>
+                    <strong>Incident #{incident.id}</strong>
+                    <span>
+                      Started{" "}
+                      {new Date(incident.started_at).toLocaleString()}
+                    </span>
+                  </div>
+
+                  <span className="incident-status">Active</span>
+                </div>
+              ))}
+          </div>
+        )}
+      </div>
+
+      <div className="incident-group">
+        <h3>Resolved Incidents</h3>
+
+        {incidents.filter((incident) => incident.is_resolved).length === 0 ? (
+          <p className="empty-state">No resolved incidents.</p>
+        ) : (
+          <div className="incident-list">
+            {incidents
+              .filter((incident) => incident.is_resolved)
+              .map((incident) => (
+                <div className="incident-item incident-resolved" key={incident.id}>
+                  <div>
+                    <strong>Incident #{incident.id}</strong>
+
+                    <span>
+                      Started{" "}
+                      {new Date(incident.started_at).toLocaleString()}
+                    </span>
+
+                    <span>
+                      Resolved{" "}
+                      {incident.resolved_at
+                        ? new Date(incident.resolved_at).toLocaleString()
+                        : "—"}
+                    </span>
+                  </div>
+
+                  <span className="incident-status">Resolved</span>
+                </div>
+              ))}
+          </div>
+        )}
+      </div>
+    </>
+  )}
+</section>
             
      
       <section className="dashboard-card check-history-card">
