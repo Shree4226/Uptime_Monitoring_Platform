@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     secret_key: str
     algorithm: str = "HS256"
 
+    frontend_url: str = "http://localhost:5173"
+
     model_config = SettingsConfigDict(env_file=".env")
 
 
