@@ -3,7 +3,7 @@ services:
   # Combined Backend: FastAPI + Celery Worker + Celery Beat
   # -------------------------------------------------------------
   - type: web
-    name: uptime-backend
+    name: uptime-backend-sg
     runtime: docker
     plan: free
     region: singapore
@@ -53,7 +53,7 @@ services:
       - key: VITE_API_URL
         fromService:
           type: web
-          name: uptime-backend
+          name: uptime-backend-sg
           envVarKey: RENDER_EXTERNAL_URL
 
     routes:
