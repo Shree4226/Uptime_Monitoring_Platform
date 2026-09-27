@@ -4,9 +4,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import {
   getMonitor,
   getMonitorAnalytics,
-  getMonitorChecks,
   getMonitorTimeSeries,
-  type Check,
   type Monitor,
   type MonitorAnalytics,
   type MonitorTimeSeries,
@@ -26,7 +24,6 @@ function MonitorDetails() {
   const [monitor, setMonitor] = useState<Monitor | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
-  const [checks, setChecks] = useState<Check[]>([])
   const [analytics, setAnalytics] = useState<MonitorAnalytics | null>(null)
   const [analyticsPeriod, setAnalyticsPeriod] = useState<
     "1h" | "24h" | "7d" | "30d"
@@ -38,13 +35,9 @@ function MonitorDetails() {
 
     const fetchMonitorData = async () => {
         try {
-        const [monitorData, checksData] = await Promise.all([
-            getMonitor(Number(monitorId)),
-            getMonitorChecks(Number(monitorId)),
-        ])
+        const monitorData = await getMonitor(Number(monitorId))
 
         setMonitor(monitorData)
-        setChecks(checksData)
         } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
             setError(

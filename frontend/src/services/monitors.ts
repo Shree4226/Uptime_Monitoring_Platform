@@ -58,10 +58,21 @@ export type Check = {
   created_at: string
 }
 
-export async function getMonitorChecks(monitorId: number) {
+export async function getMonitorChecks(
+  monitorId: number,
+  page = 1,
+  limit = 20,
+) {
   const response = await api.get<Check[]>(
     `/monitors/${monitorId}/checks`,
+    {
+      params: {
+        page,
+        limit,
+      },
+    },
   )
+
   return response.data
 }
 
