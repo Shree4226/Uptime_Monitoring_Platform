@@ -4,6 +4,7 @@ import Register from "./pages/Register"
 import Dashboard from "./pages/Dashboard"
 import ProtectedRoute from "./components/ProtectedRoute"
 import AuthenticatedLayout from "./components/layout/AuthenticatedLayout"
+import Monitors from "./pages/Monitors"
 import { AuthProvider } from "./context/AuthProvider"
 
 function App() {
@@ -25,6 +26,16 @@ function App() {
             }
           />
 
+          <Route
+            path="/monitors"
+            element={
+              <ProtectedRoute>
+                <AuthenticatedLayout>
+                  <Monitors />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </AuthProvider>
