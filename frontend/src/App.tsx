@@ -2,8 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Dashboard from "./pages/Dashboard"
-import { AuthProvider } from "./context/AuthProvider"
 import ProtectedRoute from "./components/ProtectedRoute"
+import AuthenticatedLayout from "./components/layout/AuthenticatedLayout"
+import { AuthProvider } from "./context/AuthProvider"
 
 function App() {
   return (
@@ -17,11 +18,13 @@ function App() {
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <AuthenticatedLayout>
+                  <Dashboard />
+                </AuthenticatedLayout>
               </ProtectedRoute>
             }
           />
-          
+
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </AuthProvider>
