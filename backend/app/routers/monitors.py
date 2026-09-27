@@ -226,6 +226,8 @@ def update_monitor_status(
 )
 def get_monitor_checks(
     monitor_id: int,
+    page: int = 1,
+    limit: int = 20,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -244,7 +246,28 @@ def get_monitor_checks(
             detail="Monitor not found",
         )
 
-    return monitor.checks
+    if page < 1:
+        raise HTTPException(
+            status_code=400,
+            detail="Page must be at least 1",
+        )
+
+    if limit < 1 or limit > 100:
+        raise HTTPException(
+            status_code=400,
+            detail="Limit must be between 1 and 100",
+        )
+
+    offset = (page - 1) * limit
+
+    return (
+        db.query(Check)
+        .filter(Check.monitor_id == monitor_id)
+        .order_by(Check.created_at.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
 
 @router.get(
     "/{monitor_id}/analytics",
