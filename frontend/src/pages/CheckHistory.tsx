@@ -15,6 +15,9 @@ function CheckHistory() {
   const [checks, setChecks] = useState<Check[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const PAGE_SIZE = 20
 
   useEffect(() => {
     if (!monitorId) return
@@ -23,7 +26,11 @@ function CheckHistory() {
       try {
         const [monitorData, checksData] = await Promise.all([
           getMonitor(Number(monitorId)),
-          getMonitorChecks(Number(monitorId)),
+          getMonitorChecks(
+            Number(monitorId),
+            currentPage,
+            PAGE_SIZE,
+            )
         ])
 
         setMonitor(monitorData)
@@ -43,7 +50,7 @@ function CheckHistory() {
     }
 
     fetchCheckHistory()
-  }, [monitorId])
+  }, [monitorId, currentPage])
 
   if (isLoading) {
     return (
@@ -119,6 +126,28 @@ function CheckHistory() {
           </div>
         )}
       </section>
+
+      <div className="pagination-controls">
+        <button
+            type="button"
+            onClick={() =>
+            setCurrentPage((page) => Math.max(1, page - 1))
+            }
+            disabled={currentPage === 1}
+        >
+            Previous
+        </button>
+
+        <span>Page {currentPage}</span>
+
+        <button
+            type="button"
+            onClick={() => setCurrentPage((page) => page + 1)}
+            disabled={checks.length < PAGE_SIZE}
+        >
+            Next
+        </button>
+        </div>
     </main>
   )
 }
