@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     app_name: str = "Uptime Monitoring Platform"
-    debug: bool = True
+    debug: bool = False
     database_url: str
     redis_broker_url: str
     redis_backend_url: str
