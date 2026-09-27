@@ -1,6 +1,6 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import {
   getMonitor,
   getMonitorAnalytics,
@@ -22,6 +22,7 @@ import {
 
 function MonitorDetails() {
   const { monitorId } = useParams()
+  const navigate = useNavigate()
   const [monitor, setMonitor] = useState<Monitor | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
@@ -300,57 +301,21 @@ function MonitorDetails() {
         </p>
       </section>
 
-      <section className="dashboard-card">
-            <h2>Recent Checks</h2>
+      <section className="dashboard-card check-history-card">
+        <div className="check-history-header">
+            <div>
+            <h2>Check History</h2>
+            <p>View all recorded checks for this monitor.</p>
+            </div>
 
-            {checks.length === 0 ? (
-                <p>No checks have been recorded yet.</p>
-            ) : (
-                <div className="check-table-wrapper">
-                <table className="check-table">
-                    <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Status</th>
-                        <th>Response Time</th>
-                        <th>Result</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                        {checks.map((check) => (
-                            <tr key={check.id}>
-                            <td>
-                                {new Date(check.created_at).toLocaleString()}
-                            </td>
-
-                            <td>
-                                {check.status_code ?? "—"}
-                            </td>
-
-                            <td>
-                                {check.response_time_ms !== null
-                                ? `${check.response_time_ms} ms`
-                                : "—"}
-                            </td>
-
-                            <td>
-                                <span
-                                className={`check-result ${
-                                    check.is_success ? "success" : "failed"
-                                }`}
-                                >
-                                <span className="check-result-dot" />
-                                {check.is_success ? "Success" : "Failed"}
-                                </span>
-                            </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                </table>
-                </div>
-            )}
-        </section>
+            <button
+            type="button"
+            onClick={() => navigate(`/monitors/${monitorId}/checks`)}
+            >
+            View Check History
+            </button>
+        </div>
+      </section>
     </main>
   )
 }
