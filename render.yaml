@@ -6,6 +6,7 @@ services:
     name: uptime-backend
     runtime: docker
     plan: free
+    region: singapore
     rootDir: backend
     dockerfilePath: ./Dockerfile
     dockerCommand: ./entrypoint.sh
