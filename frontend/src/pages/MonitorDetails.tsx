@@ -17,11 +17,13 @@ import {
   XAxis,
   YAxis,
 } from "recharts"
+import CreateMonitorForm from "../components/monitors/CreateMonitorForm"
 
 function MonitorDetails() {
   const { monitorId } = useParams()
   const navigate = useNavigate()
   const [monitor, setMonitor] = useState<Monitor | null>(null)
+  const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
   const [analytics, setAnalytics] = useState<MonitorAnalytics | null>(null)
@@ -152,6 +154,94 @@ function MonitorDetails() {
         </div>
       </header>
 
+      {isEditing && (
+  <CreateMonitorForm
+    monitorId={monitor.id}
+    initialData={{
+      name: monitor.name,
+      url: monitor.url,
+      method: monitor.method,
+      interval_seconds: monitor.interval_seconds,
+      expected_status: monitor.expected_status,
+      timeout_seconds: monitor.timeout_seconds,
+      retry_count: monitor.retry_count,
+      failure_threshold: monitor.failure_threshold,
+    }}
+    onCreated={async () => {
+      setIsEditing(false)
+
+      const updatedMonitor = await getMonitor(Number(monitorId))
+      setMonitor(updatedMonitor)
+    }}
+    onCancel={() => setIsEditing(false)}
+  />
+)}
+
+      <section className="dashboard-card monitor-config-card">
+  <div className="monitor-config-header">
+    <div>
+      <h2>Monitor Configuration</h2>
+      <p>Current settings for this monitor.</p>
+    </div>
+
+    <button
+      type="button"
+      onClick={() => setIsEditing(true)}
+    >
+      Edit Configuration
+    </button>
+  </div>
+
+  <div className="monitor-config-grid">
+    <div className="monitor-config-item">
+      <span>Name</span>
+      <strong>{monitor.name}</strong>
+    </div>
+
+    <div className="monitor-config-item">
+      <span>Status</span>
+      <strong>
+        {monitor.is_active ? "Active" : "Paused"}
+      </strong>
+    </div>
+
+    <div className="monitor-config-item monitor-config-wide">
+      <span>URL</span>
+      <strong>{monitor.url}</strong>
+    </div>
+
+    <div className="monitor-config-item">
+      <span>Method</span>
+      <strong>{monitor.method}</strong>
+    </div>
+
+    <div className="monitor-config-item">
+      <span>Expected Status</span>
+      <strong>{monitor.expected_status}</strong>
+    </div>
+
+    <div className="monitor-config-item">
+      <span>Check Interval</span>
+      <strong>{monitor.interval_seconds} sec</strong>
+    </div>
+
+    <div className="monitor-config-item">
+      <span>Timeout</span>
+      <strong>{monitor.timeout_seconds} sec</strong>
+    </div>
+
+    <div className="monitor-config-item">
+      <span>Retry Count</span>
+      <strong>{monitor.retry_count}</strong>
+    </div>
+
+    <div className="monitor-config-item">
+      <span>Failure Threshold</span>
+      <strong>{monitor.failure_threshold}</strong>
+    </div>
+  </div>
+</section>
+
       <section className="dashboard-card">
         <div className="analytics-header">
             <div>
@@ -257,43 +347,7 @@ function MonitorDetails() {
             )}
             </section>
             
-      <section className="dashboard-card">
-        <h2>Monitor Configuration</h2>
-
-        <p>
-          <strong>Status:</strong>{" "}
-          {monitor.is_active ? "Active" : "Paused"}
-        </p>
-
-        <p>
-          <strong>Method:</strong> {monitor.method}
-        </p>
-
-        <p>
-          <strong>Check interval:</strong>{" "}
-          {monitor.interval_seconds} seconds
-        </p>
-
-        <p>
-          <strong>Expected status:</strong>{" "}
-          {monitor.expected_status}
-        </p>
-
-        <p>
-          <strong>Timeout:</strong>{" "}
-          {monitor.timeout_seconds} seconds
-        </p>
-
-        <p>
-          <strong>Retry count:</strong> {monitor.retry_count}
-        </p>
-
-        <p>
-          <strong>Failure threshold:</strong>{" "}
-          {monitor.failure_threshold}
-        </p>
-      </section>
-
+     
       <section className="dashboard-card check-history-card">
         <div className="check-history-header">
             <div>

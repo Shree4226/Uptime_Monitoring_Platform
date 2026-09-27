@@ -710,3 +710,95 @@ input {
   font-weight: 600;
   color: #374151;
 }
+
+.monitor-config-card {
+  margin-bottom: 20px;
+}
+
+.monitor-config-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.monitor-config-header h2 {
+  margin: 0 0 6px;
+}
+
+.monitor-config-header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.monitor-config-header button {
+  padding: 9px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.monitor-config-header button:hover {
+  background: #1d4ed8;
+}
+
+.monitor-config-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.monitor-config-item {
+  padding: 14px 16px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.monitor-config-item span {
+  display: block;
+  margin-bottom: 6px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.monitor-config-item strong {
+  display: block;
+  color: #111827;
+  font-size: 15px;
+  word-break: break-word;
+}
+
+.monitor-config-wide {
+  grid-column: span 2;
+}
+
+@media (max-width: 800px) {
+  .monitor-config-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .monitor-config-wide {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .monitor-config-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .monitor-config-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .monitor-config-wide {
+    grid-column: span 1;
+  }
+}

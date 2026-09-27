@@ -5,20 +5,43 @@ import api from "../../services/api"
 type CreateMonitorFormProps = {
   onCreated: () => void
   onCancel: () => void
+  monitorId?: number
+  initialData?: {
+    name: string
+    url: string
+    method: string
+    interval_seconds: number
+    expected_status: number
+    timeout_seconds: number
+    retry_count: number
+    failure_threshold: number
+  }
 }
 
 function CreateMonitorForm({
   onCreated,
   onCancel,
+  monitorId,
+  initialData,
 }: CreateMonitorFormProps) {
-  const [name, setName] = useState("")
-  const [url, setUrl] = useState("")
-  const [method, setMethod] = useState("GET")
-  const [intervalSeconds, setIntervalSeconds] = useState(60)
-  const [expectedStatus, setExpectedStatus] = useState(200)
-  const [timeoutSeconds, setTimeoutSeconds] = useState(10)
-  const [retryCount, setRetryCount] = useState(0)
-  const [failureThreshold, setFailureThreshold] = useState(3)
+  const [name, setName] = useState(initialData?.name ?? "")
+  const [url, setUrl] = useState(initialData?.url ?? "")
+  const [method, setMethod] = useState(initialData?.method ?? "GET")
+  const [intervalSeconds, setIntervalSeconds] = useState(
+    initialData?.interval_seconds ?? 60,
+  )
+  const [expectedStatus, setExpectedStatus] = useState(
+    initialData?.expected_status ?? 200,
+  )
+  const [timeoutSeconds, setTimeoutSeconds] = useState(
+    initialData?.timeout_seconds ?? 10,
+  )
+  const [retryCount, setRetryCount] = useState(
+    initialData?.retry_count ?? 0,
+  )
+  const [failureThreshold, setFailureThreshold] = useState(
+    initialData?.failure_threshold ?? 3,
+  )
 
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -29,19 +52,25 @@ function CreateMonitorForm({
     setIsLoading(true)
 
     try {
-      await api.post("/monitors/", {
-        name,
-        url,
-        method,
-        interval_seconds: intervalSeconds,
-        expected_status: expectedStatus,
-        timeout_seconds: timeoutSeconds,
-        retry_count: retryCount,
-        failure_threshold: failureThreshold,
-        is_active: true,
-        headers: null,
-        body: null,
-      })
+      const monitorData = {
+  name,
+  url,
+  method,
+  interval_seconds: intervalSeconds,
+  expected_status: expectedStatus,
+  timeout_seconds: timeoutSeconds,
+  retry_count: retryCount,
+  failure_threshold: failureThreshold,
+  is_active: true,
+  headers: null,
+  body: null,
+}
+
+if (monitorId) {
+  await api.put(`/monitors/${monitorId}`, monitorData)
+} else {
+  await api.post("/monitors/", monitorData)
+}
 
       onCreated()
     } catch (error: unknown) {
@@ -62,8 +91,12 @@ function CreateMonitorForm({
     <section className="monitor-form-card">
       <div className="monitor-form-header">
         <div>
-          <h2>Create Monitor</h2>
-          <p>Configure a website or API to monitor.</p>
+          <h2>{monitorId ? "Edit Monitor" : "Create Monitor"}</h2>
+<p>
+  {monitorId
+    ? "Update the configuration for this monitor."
+    : "Configure a website or API to monitor."}
+</p>
         </div>
 
         <button type="button" onClick={onCancel}>
@@ -205,7 +238,13 @@ function CreateMonitorForm({
           </button>
 
           <button type="submit" disabled={isLoading}>
-            {isLoading ? "Creating..." : "Create Monitor"}
+            {isLoading
+  ? monitorId
+    ? "Saving..."
+    : "Creating..."
+  : monitorId
+    ? "Save Changes"
+    : "Create Monitor"}
           </button>
         </div>
       </form>
