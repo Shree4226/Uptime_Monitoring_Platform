@@ -8,29 +8,42 @@ type AuthProviderProps = {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(() => {
+    return Boolean(localStorage.getItem("access_token"))
+  })
+
+  const login = async (token: string) => {
+    localStorage.setItem("access_token", token)
+
+    try {
+      const response = await api.get<User>("/auth/me")
+      setUser(response.data)
+    } catch {
+      localStorage.removeItem("access_token")
+      setUser(null)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   useEffect(() => {
-    const loadUser = async () => {
-      const token = localStorage.getItem("access_token")
+    const token = localStorage.getItem("access_token")
 
-      if (!token) {
-        setIsLoading(false)
-        return
-      }
-
-      try {
-        const response = await api.get<User>("/auth/me")
-        setUser(response.data)
-      } catch {
-        localStorage.removeItem("access_token")
-        setUser(null)
-      } finally {
-        setIsLoading(false)
-      }
+    if (!token) {
+      return
     }
 
-    loadUser()
+    api.get<User>("/auth/me")
+      .then((response) => {
+        setUser(response.data)
+      })
+      .catch(() => {
+        localStorage.removeItem("access_token")
+        setUser(null)
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }, [])
 
   return (
@@ -39,6 +52,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         user,
         isLoading,
         isAuthenticated: user !== null,
+        login,
       }}
     >
       {children}

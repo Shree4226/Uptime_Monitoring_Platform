@@ -1,5 +1,7 @@
+import axios from "axios"
 import { useState, type FormEvent } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { useAuth } from "../context/useAuth"
 import api from "../services/api"
 
 function Login() {
@@ -7,6 +9,8 @@ function Login() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
+  const { login } = useAuth()
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -19,12 +23,17 @@ function Login() {
         password,
       })
 
-      localStorage.setItem("access_token", response.data.access_token)
-    } catch  {
-      setError("Login request failed. Please try again.")
-    } finally {
-      setIsLoading(false)
-    }
+      await login(response.data.access_token)
+      navigate("/dashboard")
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+       setError(error.response?.data?.detail || "Unable to sign in. Please try again.")
+      } else {
+        setError("Unable to sign in. Please try again.")
+      }
+      }finally {
+        setIsLoading(false)
+      }
   }
 
   return (
