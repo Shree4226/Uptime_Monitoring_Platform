@@ -21,3 +21,25 @@ export async function getMonitors() {
   const response = await api.get<Monitor[]>("/monitors/")
   return response.data
 }
+
+export async function updateMonitorStatus(
+  monitorId: number,
+  isActive: boolean,
+) {
+  const response = await api.patch(
+    `/monitors/${monitorId}/status`,
+    null,
+    {
+      params: {
+        is_active: isActive,
+      },
+    },
+  )
+
+  return response.data
+}
+
+export async function deleteMonitor(monitorId: number) {
+  const response = await api.delete(`/monitors/${monitorId}`)
+  return response.data
+}
