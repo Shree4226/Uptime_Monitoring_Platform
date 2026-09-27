@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard"
 import ProtectedRoute from "./components/ProtectedRoute"
 import AuthenticatedLayout from "./components/layout/AuthenticatedLayout"
 import Monitors from "./pages/Monitors"
+import MonitorDetails from "./pages/MonitorDetails"
 import { AuthProvider } from "./context/AuthProvider"
 
 function App() {
@@ -32,6 +33,17 @@ function App() {
               <ProtectedRoute>
                 <AuthenticatedLayout>
                   <Monitors />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/monitors/:monitorId"
+            element={
+              <ProtectedRoute>
+                <AuthenticatedLayout>
+                  <MonitorDetails />
                 </AuthenticatedLayout>
               </ProtectedRoute>
             }

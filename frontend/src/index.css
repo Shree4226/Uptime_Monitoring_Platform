@@ -483,3 +483,159 @@ input {
   gap: 10px;
   margin-left: auto;
 }
+
+.monitor-content {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.monitor-content:hover h2 {
+  text-decoration: underline;
+}
+
+.check-table-wrapper {
+  overflow-x: auto;
+}
+
+.check-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.check-table th,
+.check-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.check-table th {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.check-table td {
+  color: #374151;
+  font-size: 14px;
+}
+
+.check-result {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.check-result-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.check-result.success {
+  color: #15803d;
+}
+
+.check-result.success .check-result-dot {
+  background: #16a34a;
+}
+
+.check-result.failed {
+  color: #b91c1c;
+}
+
+.check-result.failed .check-result-dot {
+  background: #dc2626;
+}
+
+.analytics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.analytics-header p {
+  margin-top: 6px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.analytics-header select {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  font-size: 14px;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.analytics-card {
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.analytics-card span {
+  display: block;
+  margin-bottom: 8px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.analytics-card strong {
+  font-size: 24px;
+}
+
+.response-time-chart {
+  width: 100%;
+}
+
+.check-status-summary {
+  display: flex;
+  gap: 32px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.check-status-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.check-status-item strong {
+  color: #111827;
+  font-size: 16px;
+}
+
+.check-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.check-status-item.success .check-status-dot {
+  background: #16a34a;
+}
+
+.check-status-item.failed .check-status-dot {
+  background: #dc2626;
+}
+
+.check-status-summary strong {
+  color: #111827;
+  font-size: 16px;
+}

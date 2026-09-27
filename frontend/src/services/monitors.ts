@@ -43,3 +43,75 @@ export async function deleteMonitor(monitorId: number) {
   const response = await api.delete(`/monitors/${monitorId}`)
   return response.data
 }
+
+export async function getMonitor(monitorId: number) {
+  const response = await api.get<Monitor>(`/monitors/${monitorId}`)
+  return response.data
+}
+
+export type Check = {
+  id: number
+  monitor_id: number
+  status_code: number | null
+  response_time_ms: number | null
+  is_success: boolean
+  created_at: string
+}
+
+export async function getMonitorChecks(monitorId: number) {
+  const response = await api.get<Check[]>(
+    `/monitors/${monitorId}/checks`,
+  )
+  return response.data
+}
+
+export type MonitorAnalytics = {
+  uptime_percentage: number
+  average_response_time_ms: number
+  total_checks: number
+  successful_checks: number
+  failed_checks: number
+}
+
+export async function getMonitorAnalytics(
+  monitorId: number,
+  period: "1h" | "24h" | "7d" | "30d",
+) {
+  const response = await api.get<MonitorAnalytics>(
+    `/monitors/${monitorId}/analytics`,
+    {
+      params: {
+        period,
+      },
+    },
+  )
+
+  return response.data
+}
+
+export type MonitorTimeSeriesPoint = {
+  timestamp: string
+  response_time_ms: number | null
+  is_success: boolean
+}
+
+export type MonitorTimeSeries = {
+  period: "1h" | "24h" | "7d" | "30d"
+  data: MonitorTimeSeriesPoint[]
+}
+
+export async function getMonitorTimeSeries(
+  monitorId: number,
+  period: "1h" | "24h" | "7d" | "30d",
+) {
+  const response = await api.get<MonitorTimeSeries>(
+    `/monitors/${monitorId}/analytics/timeseries`,
+    {
+      params: {
+        period,
+      },
+    },
+  )
+
+  return response.data
+}
