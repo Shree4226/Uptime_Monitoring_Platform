@@ -77,10 +77,12 @@ class Monitor(Base):
 
     checks: Mapped[list["Check"]] = relationship(
         back_populates="monitor",
+        cascade="all, delete-orphan",
     )
 
     incidents: Mapped[list["Incident"]] = relationship(
         back_populates="monitor",
+        cascade="all, delete-orphan",
     )
 
     user: Mapped["User"] = relationship(
