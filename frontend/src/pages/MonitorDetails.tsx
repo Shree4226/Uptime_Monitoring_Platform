@@ -142,13 +142,23 @@ function MonitorDetails() {
 
   const chartData =
     timeSeries?.data.map((point) => ({
-        time: new Date(point.timestamp).toLocaleTimeString([], {
+      time: new Date(point.timestamp).toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
-        }),
-        responseTime: point.response_time_ms,
-        success: point.is_success,
+      }),
+      responseTime: Number(point.response_time_ms ?? 0),
+      success: point.is_success,
     })) ?? []
+
+  const uptimeValue =
+    analytics && typeof analytics.uptime_percentage === "number"
+      ? analytics.uptime_percentage.toFixed(2)
+      : "0.00"
+
+  const responseTimeValue =
+    analytics && analytics.average_response_time_ms !== null
+      ? `${analytics.average_response_time_ms.toFixed(0)} ms`
+      : "N/A"
 
   return (
     <main className="dashboard-page">
@@ -273,16 +283,12 @@ function MonitorDetails() {
             <div className="analytics-grid">
             <div className="analytics-card">
                 <span>Uptime</span>
-                <strong>
-                {analytics.uptime_percentage.toFixed(2)}%
-                </strong>
+                <strong>{uptimeValue}%</strong>
             </div>
 
             <div className="analytics-card">
                 <span>Avg. Response Time</span>
-                <strong>
-                {analytics.average_response_time_ms.toFixed(0)} ms
-                </strong>
+                <strong>{responseTimeValue}</strong>
             </div>
 
             <div className="analytics-card">
@@ -312,22 +318,44 @@ function MonitorDetails() {
                 <div className="response-time-chart">
                 <ResponsiveContainer width="100%" height={320}>
                     <LineChart data={chartData}>
-                    <XAxis dataKey="time" />
+                    <XAxis
+                        dataKey="time"
+                        tickLine={false}
+                        axisLine={false}
+                        tick={{ fill: "#667085", fontSize: 11 }}
+                    />
                     <YAxis
+                        domain={[0, (dataMax: number) => Math.max(dataMax * 1.35, 100)]}
+                        tickLine={false}
+                        axisLine={false}
+                        tick={{ fill: "#667085", fontSize: 11 }}
+                        tickFormatter={(value) => `${value}ms`}
                         label={{
-                        value: "Milliseconds",
+                        value: "ms",
                         angle: -90,
                         position: "insideLeft",
+                        fill: "#667085",
+                        fontSize: 11,
                         }}
                     />
-                    <Tooltip />
+                    <Tooltip
+                      formatter={(value) => [`${Number(value ?? 0)} ms`, "Response time"]}
+                        labelStyle={{ color: "#172033" }}
+                        contentStyle={{
+                        borderRadius: 8,
+                        border: "1px solid #E4E7EC",
+                        background: "#FFFFFF",
+                        color: "#172033",
+                        }}
+                    />
                     <Line
                         type="monotone"
                         dataKey="responseTime"
                         name="Response time"
-                        stroke="#2563eb"
-                        strokeWidth={2}
+                        stroke="#2457A6"
+                        strokeWidth={2.5}
                         dot={false}
+                        activeDot={{ r: 4, fill: "#2457A6" }}
                     />
                     </LineChart>
                 </ResponsiveContainer>

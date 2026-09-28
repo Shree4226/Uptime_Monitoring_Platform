@@ -8,11 +8,13 @@ import Monitors from "./pages/Monitors"
 import MonitorDetails from "./pages/MonitorDetails.tsx"
 import CheckHistory from "./pages/CheckHistory"
 import { AuthProvider } from "./context/AuthProvider"
+import ErrorBoundary from "./components/ErrorBoundary"
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <ErrorBoundary>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -62,6 +64,7 @@ function App() {
           />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
+        </ErrorBoundary>
       </AuthProvider>
     </BrowserRouter>
   )
