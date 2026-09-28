@@ -54,7 +54,9 @@ function App() {
             path="/monitors/:monitorId/checks"
             element={
               <ProtectedRoute>
-                <CheckHistory />
+                <AuthenticatedLayout>
+                  <CheckHistory />
+                </AuthenticatedLayout>
               </ProtectedRoute>
             }
           />

@@ -9,7 +9,7 @@ function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
   return (
     <>
       <Navbar />
-      {children}
+      <div className="app-shell">{children}</div>
     </>
   )
 }
