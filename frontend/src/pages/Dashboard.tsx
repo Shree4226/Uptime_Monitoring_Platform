@@ -60,44 +60,44 @@ function Dashboard() {
       </header>
 
       <section className="dashboard-grid">
-        <article className="dashboard-card">
+        <article className="dashboard-card metric-total">
           <h2>Total Monitors</h2>
-          <p>{summary.total_monitors}</p>
+          <p className="metric-value">{summary.total_monitors}</p>
         </article>
 
-        <article className="dashboard-card">
+        <article className="dashboard-card metric-up">
           <h2>Up</h2>
-          <p>{summary.up_monitors}</p>
+          <p className="metric-value">{summary.up_monitors}</p>
         </article>
 
-        <article className="dashboard-card">
+        <article className="dashboard-card metric-down">
           <h2>Down</h2>
-          <p>{summary.down_monitors}</p>
+          <p className="metric-value">{summary.down_monitors}</p>
         </article>
 
-        <article className="dashboard-card">
+        <article className="dashboard-card metric-active">
           <h2>Active</h2>
-          <p>{summary.active_monitors}</p>
+          <p className="metric-value">{summary.active_monitors}</p>
         </article>
 
-        <article className="dashboard-card">
+        <article className="dashboard-card metric-paused">
           <h2>Paused</h2>
-          <p>{summary.paused_monitors}</p>
+          <p className="metric-value">{summary.paused_monitors}</p>
         </article>
 
-        <article className="dashboard-card">
+        <article className="dashboard-card metric-incidents">
           <h2>Active Incidents</h2>
-          <p>{summary.active_incidents}</p>
+          <p className="metric-value">{summary.active_incidents}</p>
         </article>
 
-        <article className="dashboard-card">
+        <article className="dashboard-card metric-uptime">
           <h2>Overall Uptime</h2>
-          <p>{summary.overall_uptime_percentage.toFixed(2)}%</p>
+          <p className="metric-value">{summary.overall_uptime_percentage.toFixed(2)}%</p>
         </article>
 
-        <article className="dashboard-card">
+        <article className="dashboard-card metric-response">
           <h2>Average Response Time</h2>
-          <p>
+          <p className="metric-value">
             {summary.average_response_time_ms !== null
               ? `${summary.average_response_time_ms.toFixed(0)} ms`
               : "N/A"}

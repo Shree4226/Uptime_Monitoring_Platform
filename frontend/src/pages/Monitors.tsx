@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react"
 import { getMonitors,updateMonitorStatus, deleteMonitor, type Monitor } from "../services/monitors"
 import CreateMonitorForm from "../components/monitors/CreateMonitorForm"
 import Toast from "../components/common/Toast"
-import {useNavigate} from "react-router-dom"
+import { Link } from "react-router-dom"
 
 type SortOption =
   | "updated_desc"
@@ -19,7 +19,6 @@ function Monitors() {
   const [error, setError] = useState("")
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [toastMessage, setToastMessage] = useState("")
-  const navigate = useNavigate()
   const [sortOption, setSortOption] =
     useState<SortOption>("updated_desc")
 
@@ -273,20 +272,16 @@ function Monitors() {
           <section className="monitor-list">
             {sortedMonitors.map((monitor) => (
             <article className="monitor-card" key={monitor.id}>
-                <div
-                    className="monitor-content"
-                    onClick={() => navigate(`/monitors/${monitor.id}`)}
-                    role="button"
-                    tabIndex={0}
-                    >
+                <Link className="monitor-content" to={`/monitors/${monitor.id}`}>
                     <div>
                         <h2>{monitor.name}</h2>
                         <p className="monitor-url">{monitor.url}</p>
                     </div>
 
                     <div className="monitor-info">
-                        <span>
-                        {monitor.is_active ? "Active" : "Paused"}
+                  <span className={`monitor-state ${monitor.is_active ? "active" : "paused"}`}>
+                  <span className="status-dot" aria-hidden="true" />
+                  {monitor.is_active ? "Active" : "Paused"}
                         </span>
 
                         <span>
@@ -297,7 +292,7 @@ function Monitors() {
                         Expected {monitor.expected_status}
                         </span>
                     </div>
-                    </div>
+                    </Link>
 
                 <div className="monitor-actions">
                 <button

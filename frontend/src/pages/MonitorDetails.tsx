@@ -14,6 +14,7 @@ import {
 import {
   Line,
   LineChart,
+  CartesianGrid,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -167,6 +168,13 @@ function MonitorDetails() {
           <h1>{monitor.name}</h1>
           <p>{monitor.url}</p>
         </div>
+        <div className="monitor-detail-status">
+          <span className={`monitor-state ${monitor.is_active ? "active" : "paused"}`}>
+            <span className="status-dot" aria-hidden="true" />
+            {monitor.is_active ? "Active" : "Paused"}
+          </span>
+          <span className="detail-interval">Every {monitor.interval_seconds}s</span>
+        </div>
       </header>
 
       {isEditing && (
@@ -318,44 +326,46 @@ function MonitorDetails() {
                 <div className="response-time-chart">
                 <ResponsiveContainer width="100%" height={320}>
                     <LineChart data={chartData}>
+                    <CartesianGrid stroke="#D9D6CF" strokeDasharray="2 4" vertical={false} />
                     <XAxis
                         dataKey="time"
                         tickLine={false}
                         axisLine={false}
-                        tick={{ fill: "#667085", fontSize: 11 }}
+                        tick={{ fill: "#6B6A66", fontSize: 11 }}
                     />
                     <YAxis
                         domain={[0, (dataMax: number) => Math.max(dataMax * 1.35, 100)]}
                         tickLine={false}
                         axisLine={false}
-                        tick={{ fill: "#667085", fontSize: 11 }}
+                        tick={{ fill: "#6B6A66", fontSize: 11 }}
                         tickFormatter={(value) => `${value}ms`}
                         label={{
                         value: "ms",
                         angle: -90,
                         position: "insideLeft",
-                        fill: "#667085",
+                        fill: "#6B6A66",
                         fontSize: 11,
                         }}
                     />
                     <Tooltip
                       formatter={(value) => [`${Number(value ?? 0)} ms`, "Response time"]}
-                        labelStyle={{ color: "#172033" }}
+                        labelStyle={{ color: "#1A1D21", fontFamily: "IBM Plex Mono" }}
                         contentStyle={{
-                        borderRadius: 8,
-                        border: "1px solid #E4E7EC",
-                        background: "#FFFFFF",
-                        color: "#172033",
+                        borderRadius: 6,
+                        border: "1px solid #D9D6CF",
+                        background: "#F7F6F3",
+                        color: "#1A1D21",
+                        fontFamily: "IBM Plex Mono",
                         }}
                     />
                     <Line
                         type="monotone"
                         dataKey="responseTime"
                         name="Response time"
-                        stroke="#2457A6"
-                        strokeWidth={2.5}
+                        stroke="#C8552B"
+                        strokeWidth={2}
                         dot={false}
-                        activeDot={{ r: 4, fill: "#2457A6" }}
+                        activeDot={{ r: 4, fill: "#C8552B", stroke: "#F7F6F3", strokeWidth: 2 }}
                     />
                     </LineChart>
                 </ResponsiveContainer>
